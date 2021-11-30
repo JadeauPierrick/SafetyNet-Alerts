@@ -4,31 +4,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynetalerts.model.Firestation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
+import com.safetynet.safetynetalerts.model.Root;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class DataService {
 
-    private ReadJSONFile readJSONFile;
+    private Root root;
 
     public DataService() {
         this.loadData();
     }
 
     public List<Person> getPersons(){
-        return readJSONFile.getPersons();
+        return root.getPersons();
     }
 
     public List<Firestation> getFirestations(){
-        return readJSONFile.getFirestations();
+        return root.getFirestations();
     }
 
     public List<MedicalRecord> getMedicalrecords(){
-        return readJSONFile.getMedicalrecords();
+        return root.getMedicalrecords();
     }
 
 
@@ -37,12 +39,11 @@ public class DataService {
 
 
         try {
-            this.readJSONFile = objectMapper.readValue(new File("src/main/resources/data.json"), ReadJSONFile.class);
-            System.out.println(readJSONFile);
+            this.root = objectMapper.readValue(new File("src/main/resources/data.json"), Root.class);
+            System.out.println(root);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
+
 }
