@@ -31,4 +31,14 @@ public class MedicalRecordService {
         medicalRecordsList.add(medicalRecord);
         return medicalRecord;
     }
+
+    public void deleteMedicalRecord(String firstName, String lastName){
+        List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
+        MedicalRecord medicalRecord = medicalRecordsList.stream()
+                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                .findFirst()
+                .get();
+
+        medicalRecordsList.remove(medicalRecord);
+    }
 }

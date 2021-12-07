@@ -65,8 +65,6 @@ public class PersonController {
 
     @DeleteMapping(value = "/person/{firstName}/{lastName}")
     public void deletePerson(@PathVariable String firstName, @PathVariable String lastName){
-        System.out.println(firstName);
-        System.out.println(lastName);
         personService.deletePerson(firstName, lastName);
     }
 }

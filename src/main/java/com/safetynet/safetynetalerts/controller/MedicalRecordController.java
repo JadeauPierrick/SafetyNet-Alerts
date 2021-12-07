@@ -1,7 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
 import com.safetynet.safetynetalerts.model.MedicalRecord;
-import com.safetynet.safetynetalerts.service.DataService;
 import com.safetynet.safetynetalerts.service.MedicalRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +48,10 @@ public class MedicalRecordController {
         }
         medicalRecordService.saveMedicalRecord(md);
         return md;
+    }
+
+    @DeleteMapping(value = "/medicalRecord/{firstName}/{lastName}")
+    public void deleteMedicalRecord(@PathVariable String firstName, @PathVariable String lastName){
+        medicalRecordService.deleteMedicalRecord(firstName, lastName);
     }
 }

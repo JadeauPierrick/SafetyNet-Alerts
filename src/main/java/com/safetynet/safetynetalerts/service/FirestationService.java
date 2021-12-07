@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 
 @Service
@@ -36,12 +35,12 @@ public class FirestationService {
 
     public void deleteFirestation(String address) {
         List<Firestation> firestationList = dataService.getFirestations();
-        ListIterator<Firestation> newFirestationList = firestationList.listIterator();
-        while (newFirestationList.hasNext()){
-            if (newFirestationList.next().getAddress().equals(address)){
-                newFirestationList.remove();
-            }
-        }
+        Firestation firestation = firestationList.stream()
+                .filter(x -> x.getAddress().equals(address))
+                .findFirst()
+                .get();
+
+        firestationList.remove(firestation);
     }
 }
 

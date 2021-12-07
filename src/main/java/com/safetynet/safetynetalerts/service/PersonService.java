@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.service;
 
+import com.safetynet.safetynetalerts.model.Firestation;
 import com.safetynet.safetynetalerts.model.Person;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -37,13 +39,11 @@ public class PersonService {
 
     public void deletePerson(String firstName, String lastName) {
         List<Person> personList = dataService.getPersons();
-        Person[] personArray = personList.toArray(new Person[personList.size()]);
-        for (Person person : personArray) {
-            //System.out.println(person);
-            if ((person.getFirstName().equals(firstName)) && (person.getLastName().equals(lastName))){
-                System.out.println(person);
-                personArray = ArrayUtils.removeElement(personArray, person);
-            }
-        }
+        Person person = personList.stream()
+                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                .findFirst()
+                .get();
+
+        personList.remove(person);
     }
 }

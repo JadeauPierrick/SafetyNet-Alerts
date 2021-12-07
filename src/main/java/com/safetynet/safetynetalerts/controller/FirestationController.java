@@ -48,8 +48,6 @@ public class FirestationController {
 
     @DeleteMapping(value = "/firestation/{address}")
     public void deleteFirestation(@PathVariable String address){
-        System.out.println(address);
             firestationService.deleteFirestation(address);
-
     }
 }
