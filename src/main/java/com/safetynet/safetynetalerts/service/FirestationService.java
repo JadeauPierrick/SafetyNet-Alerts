@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FirestationService {
@@ -20,12 +20,23 @@ public class FirestationService {
 
     public Firestation findFirestationByAddress(String address) {
         List<Firestation> firestationList = dataService.getFirestations();
-        Optional<Firestation> firestation = firestationList.stream()
+        Firestation firestation = firestationList.stream()
                 .filter(x -> x.getAddress().equals(address))
-                .findFirst();
+                .findFirst()
+                .get();
 
-        return firestation.get();
+        return firestation;
     }
+
+    public List<Firestation> findFirestationByStation(int station){
+        List<Firestation> firestationList = dataService.getFirestations();
+        List<Firestation> fsList = firestationList.stream()
+                .filter(x -> x.getStation() == station)
+                .collect(Collectors.toList());
+
+        return fsList;
+    }
+
 
     public Firestation saveFirestation(Firestation firestation) {
         List<Firestation> firestationList = dataService.getFirestations();

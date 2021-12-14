@@ -2,10 +2,8 @@ package com.safetynet.safetynetalerts.DTO;
 
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 @Data
-@Component
 public class PersonByFirestationNumberDTO {
 
     private String firstName;
