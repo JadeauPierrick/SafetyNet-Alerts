@@ -32,5 +32,9 @@ public class DTOController {
         return medicalRecordService.childAlertService(address);
     }
 
+    @RequestMapping(value = "/phoneAlert", params = { "firestation" })
+    public List<String> phoneAlert(@RequestParam("firestation") int firestationNumber){
+        return personService.phoneAlertService(firestationNumber);
+    }
 
 }

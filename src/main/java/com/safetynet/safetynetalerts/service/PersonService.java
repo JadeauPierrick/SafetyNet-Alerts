@@ -81,4 +81,18 @@ public class PersonService {
         return new PersonCoveredByItsFirestationNumberDTO(personList, numberOfAdults, numberOfChildren);
     }
 
+    public List<String> phoneAlertService(int firestationNumber){
+        List<Firestation> firestationList = dataService.getFirestations().stream()
+                .filter(x -> x.getStation() == firestationNumber)
+                .collect(Collectors.toList());
+
+        List<String> phoneList = dataService.getPersons().stream()
+                .filter(add -> firestationList.stream().map(Firestation::getAddress).anyMatch(address -> address.equals(add.getAddress())))
+                .map(Person::getPhone)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return phoneList;
+    }
+
 }
