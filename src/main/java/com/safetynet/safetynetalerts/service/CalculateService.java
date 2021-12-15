@@ -16,7 +16,7 @@ public class CalculateService {
     private DataService dataService;
 
     public int calculateAge(final String birthday) {
-        log.debug("start AgeCalculator");
+        log.debug("start CalculateService");
         try{
             LocalDate birthDate = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
             LocalDate currentDate = LocalDate.now();
@@ -24,7 +24,7 @@ public class CalculateService {
                 log.error("Birthday after the current date");
                 throw new IllegalArgumentException("BirthDay Date format");
             }
-            log.debug("end AgeCalculator");
+            log.debug("end CalculateService");
             return Period.between(birthDate, currentDate).getYears();
         }catch(Exception e) {
             System.out.println(birthday);
