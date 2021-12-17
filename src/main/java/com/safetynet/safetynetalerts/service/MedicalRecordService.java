@@ -1,14 +1,12 @@
 package com.safetynet.safetynetalerts.service;
 
 import com.safetynet.safetynetalerts.DTO.ChildAlertDTO;
-import com.safetynet.safetynetalerts.DTO.PersonByFirestationNumberDTO;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,28 +25,60 @@ public class MedicalRecordService {
         return dataService.getMedicalrecords();
     }
 
-    public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName){
-        List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
-        Optional<MedicalRecord> medicalRecord = medicalRecordsList.stream()
-                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                .findFirst();
-        return medicalRecord.get();
+    public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
+        try {
+            List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
+            Optional<MedicalRecord> medicalRecord = medicalRecordsList.stream()
+                    .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                    .findFirst();
+            return medicalRecord.get();
+        } catch (Exception exception) {
+            return null;
+        }
     }
 
     public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecord){
-        List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
-        medicalRecordsList.add(medicalRecord);
-        return medicalRecord;
+        try {
+            List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
+            medicalRecordsList.add(medicalRecord);
+            return medicalRecord;
+        }catch (Exception exception){
+            return null;
+        }
     }
 
-    public void deleteMedicalRecord(String firstName, String lastName){
-        List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
-        MedicalRecord medicalRecord = medicalRecordsList.stream()
-                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                .findFirst()
-                .get();
+    public MedicalRecord updateMedicalRecord(String firstName, String lastName, MedicalRecord medicalRecord){
+        try {
+            MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
 
-        medicalRecordsList.remove(medicalRecord);
+            List<String> medications = medicalRecord.getMedications();
+            if (medications != null){
+                md.setMedications(medications);
+            }
+            List<String> allergies = medicalRecord.getAllergies();
+            if (allergies != null){
+                md.setAllergies(allergies);
+            }
+            saveMedicalRecord(md);
+            return md;
+        }catch (Exception exception){
+            return null;
+        }
+    }
+
+    public boolean deleteMedicalRecord(String firstName, String lastName){
+        try {
+            List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
+            MedicalRecord medicalRecord = medicalRecordsList.stream()
+                    .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                    .findFirst()
+                    .get();
+
+            medicalRecordsList.remove(medicalRecord);
+            return true;
+        }catch (Exception exception){
+            return false;
+        }
     }
 
     public List<ChildAlertDTO> childAlertService(String address){

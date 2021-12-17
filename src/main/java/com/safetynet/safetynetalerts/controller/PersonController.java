@@ -3,6 +3,7 @@ package com.safetynet.safetynetalerts.controller;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,56 +16,52 @@ public class PersonController {
     private PersonService personService;
 
     @GetMapping(value = "/person")
-    public List<Person> listOfPersons(){
-        return personService.displayPersons();
+    public ResponseEntity<List<Person>> listOfPersons(){
+        List<Person> personList = personService.displayPersons();
+        if (personList.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else {
+            return new ResponseEntity<>(personList, HttpStatus.OK);
+        }
     }
 
     @GetMapping(value = "/person/{firstName}/{lastName}")
-    public Person findPersonByFirstNameAndLastName(@PathVariable String firstName, @PathVariable String lastName){
-        Person findPerson = personService.findPersonByFirstNameAndLastName(firstName, lastName);
-        return findPerson;
+    public ResponseEntity<Person> findPersonByFirstNameAndLastName(@PathVariable String firstName, @PathVariable String lastName){
+        Person person = personService.findPersonByFirstNameAndLastName(firstName, lastName);
+        if(person == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            return new ResponseEntity<>(person, HttpStatus.OK);
+        }
     }
 
     @PostMapping(value = "/person")
     public ResponseEntity<Person> createPerson(@RequestBody Person person){
         if(person == null){
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }else{
             Person newPerson = personService.savePerson(person);
-            return ResponseEntity.ok(newPerson);
+            return new ResponseEntity<>(newPerson, HttpStatus.CREATED);
         }
     }
 
     @PutMapping(value = "/person/{firstName}/{lastName}")
-    public Person updatePerson(@PathVariable String firstName, @PathVariable String lastName, @RequestBody Person person){
-        Person ps = personService.findPersonByFirstNameAndLastName(firstName, lastName);
-
-        String address = person.getAddress();
-        if (address != null){
-            ps.setAddress(address);
+    public ResponseEntity<Person> updatePerson(@PathVariable String firstName, @PathVariable String lastName, @RequestBody Person person){
+        if (firstName == null || lastName == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            Person person1 = personService.updatePerson(firstName, lastName, person);
+            return new ResponseEntity<>(person1, HttpStatus.OK);
         }
-        String city = person.getCity();
-        if (city != null){
-            ps.setCity(city);
-        }
-        int zip = person.getZip();
-        if (zip != 0){
-            ps.setZip(zip);
-        }
-        String phone = person.getPhone();
-        if (phone != null){
-            ps.setPhone(phone);
-        }
-        String email = person.getEmail();
-        if (email != null){
-            ps.setEmail(email);
-        }
-        personService.savePerson(ps);
-        return ps;
     }
 
     @DeleteMapping(value = "/person/{firstName}/{lastName}")
-    public void deletePerson(@PathVariable String firstName, @PathVariable String lastName){
-        personService.deletePerson(firstName, lastName);
+    public ResponseEntity<Void> deletePerson(@PathVariable String firstName, @PathVariable String lastName){
+        boolean delete = personService.deletePerson(firstName, lastName);
+        if (delete){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

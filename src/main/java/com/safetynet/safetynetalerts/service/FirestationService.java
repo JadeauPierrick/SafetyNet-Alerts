@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FirestationService {
@@ -19,39 +18,57 @@ public class FirestationService {
     }
 
     public Firestation findFirestationByAddress(String address) {
-        List<Firestation> firestationList = dataService.getFirestations();
-        Firestation firestation = firestationList.stream()
-                .filter(x -> x.getAddress().equals(address))
-                .findFirst()
-                .get();
+        try {
+            List<Firestation> firestationList = dataService.getFirestations();
+            Firestation firestation = firestationList.stream()
+                    .filter(x -> x.getAddress().equals(address))
+                    .findFirst()
+                    .get();
 
-        return firestation;
+            return firestation;
+        } catch (Exception exception) {
+            return null;
+        }
     }
-
-    public List<Firestation> findFirestationByStation(int station){
-        List<Firestation> firestationList = dataService.getFirestations();
-        List<Firestation> fsList = firestationList.stream()
-                .filter(x -> x.getStation() == station)
-                .collect(Collectors.toList());
-
-        return fsList;
-    }
-
 
     public Firestation saveFirestation(Firestation firestation) {
-        List<Firestation> firestationList = dataService.getFirestations();
-        firestationList.add(firestation);
-        return firestation;
+        try {
+            List<Firestation> firestationList = dataService.getFirestations();
+            firestationList.add(firestation);
+            return firestation;
+        }catch (Exception exception){
+            return null;
+        }
     }
 
-    public void deleteFirestation(String address) {
-        List<Firestation> firestationList = dataService.getFirestations();
-        Firestation firestation = firestationList.stream()
-                .filter(x -> x.getAddress().equals(address))
-                .findFirst()
-                .get();
+    public Firestation updateFirestation(String address, Firestation firestation) {
+        try {
+            Firestation fs = findFirestationByAddress(address);
 
-        firestationList.remove(firestation);
+            int station = firestation.getStation();
+            if (station != 0) {
+                fs.setStation(station);
+            }
+            saveFirestation(fs);
+            return fs;
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public boolean deleteFirestation(String address) {
+        try {
+            List<Firestation> firestationList = dataService.getFirestations();
+            Firestation firestation = firestationList.stream()
+                    .filter(x -> x.getAddress().equals(address))
+                    .findFirst()
+                    .get();
+
+            firestationList.remove(firestation);
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
     }
 }
 

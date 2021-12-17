@@ -2,7 +2,10 @@ package com.safetynet.safetynetalerts.controller;
 
 
 import com.safetynet.safetynetalerts.DTO.ChildAlertDTO;
+import com.safetynet.safetynetalerts.DTO.FireDTO;
 import com.safetynet.safetynetalerts.DTO.PersonCoveredByItsFirestationNumberDTO;
+import com.safetynet.safetynetalerts.model.Firestation;
+import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,4 +40,8 @@ public class DTOController {
         return personService.phoneAlertService(firestationNumber);
     }
 
+    @RequestMapping(value = "/fire", params = { "address" })
+    public FireDTO fireAlert(@RequestParam("address") String address){
+        return personService.fireAlertService(address);
+    }
 }

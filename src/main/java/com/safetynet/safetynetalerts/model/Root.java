@@ -20,6 +20,10 @@ public class Root {
     public Root() {
     }
 
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
+    }
+
     @Override
     public String toString() {
         return "Root{" +

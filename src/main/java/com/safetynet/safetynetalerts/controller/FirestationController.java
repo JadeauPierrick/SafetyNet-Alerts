@@ -3,6 +3,7 @@ package com.safetynet.safetynetalerts.controller;
 import com.safetynet.safetynetalerts.model.Firestation;
 import com.safetynet.safetynetalerts.service.FirestationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,39 +16,52 @@ public class FirestationController {
     private FirestationService firestationService;
 
     @GetMapping(value = "/firestation")
-    public List<Firestation> listOfFirestations(){
-        return firestationService.displayFirestations();
+    public ResponseEntity<List<Firestation>> listOfFirestations(){
+        List<Firestation> firestationList = firestationService.displayFirestations();
+        if (firestationList.isEmpty()){
+           return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else {
+            return new ResponseEntity<>(firestationList, HttpStatus.OK);
+        }
     }
 
     @GetMapping(value = "/firestation/{address}")
-    public Firestation findFirestationByAddress(@PathVariable String address){
-        return firestationService.findFirestationByAddress(address);
+    public ResponseEntity<Firestation> findFirestationByAddress(@PathVariable String address){
+        Firestation firestation = firestationService.findFirestationByAddress(address);
+        if (firestation == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            return new ResponseEntity<>(firestation, HttpStatus.OK);
+        }
     }
 
     @PostMapping(value = "/firestation")
     public ResponseEntity<Firestation> createFirestation(@RequestBody Firestation firestation){
         if(firestation == null){
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }else{
             Firestation newFirestation = firestationService.saveFirestation(firestation);
-            return ResponseEntity.ok(newFirestation);
+            return new ResponseEntity<>(newFirestation, HttpStatus.CREATED);
         }
     }
 
     @PutMapping(value = "/firestation/{address}")
-    public Firestation updateFirestation(@PathVariable String address, @RequestBody Firestation firestation){
-        Firestation fs = firestationService.findFirestationByAddress(address);
-
-        int station = firestation.getStation();
-        if (station != 0){
-            fs.setStation(station);
+    public ResponseEntity<Firestation> updateFirestation(@PathVariable String address, @RequestBody Firestation firestation) {
+        if (address == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            Firestation newFirestation = firestationService.updateFirestation(address, firestation);
+            return new ResponseEntity<>(newFirestation, HttpStatus.OK);
         }
-        firestationService.saveFirestation(fs);
-        return fs;
     }
 
     @DeleteMapping(value = "/firestation/{address}")
-    public void deleteFirestation(@PathVariable String address){
-            firestationService.deleteFirestation(address);
+    public ResponseEntity<Void> deleteFirestation(@PathVariable String address){
+        boolean delete = firestationService.deleteFirestation(address);
+        if (delete) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
