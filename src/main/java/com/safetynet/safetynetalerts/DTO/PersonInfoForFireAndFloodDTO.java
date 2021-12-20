@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PersonInfoForFireDTO {
+public class PersonInfoForFireAndFloodDTO {
 
     private String firstName;
     private String lastName;
@@ -14,7 +14,7 @@ public class PersonInfoForFireDTO {
     private List<String> medications;
     private List<String> allergies;
 
-    public PersonInfoForFireDTO(String firstName, String lastName, String phone, int age, List<String> medications, List<String> allergies) {
+    public PersonInfoForFireAndFloodDTO(String firstName, String lastName, String phone, int age, List<String> medications, List<String> allergies) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
@@ -23,6 +23,6 @@ public class PersonInfoForFireDTO {
         this.allergies = allergies;
     }
 
-    public PersonInfoForFireDTO() {
+    public PersonInfoForFireAndFloodDTO() {
     }
 }

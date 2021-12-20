@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.service;
 
+import com.safetynet.safetynetalerts.DTO.FloodDTO;
 import com.safetynet.safetynetalerts.model.Firestation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,7 @@ public class FirestationService {
             return false;
         }
     }
+
 }
 
 

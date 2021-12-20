@@ -7,11 +7,11 @@ import java.util.List;
 @Data
 public class FireDTO {
 
-    private List<PersonInfoForFireDTO> personInfoForFireDTOList;
+    private List<PersonInfoForFireAndFloodDTO> personInfoDTOList;
     private int station;
 
-    public FireDTO(List<PersonInfoForFireDTO> personInfoForFireDTOList, int station) {
-        this.personInfoForFireDTOList = personInfoForFireDTOList;
+    public FireDTO(List<PersonInfoForFireAndFloodDTO> personInfoDTOList, int station) {
+        this.personInfoDTOList = personInfoDTOList;
         this.station = station;
     }
 

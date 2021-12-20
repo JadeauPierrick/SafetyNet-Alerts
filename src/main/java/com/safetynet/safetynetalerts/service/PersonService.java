@@ -1,9 +1,6 @@
 package com.safetynet.safetynetalerts.service;
 
-import com.safetynet.safetynetalerts.DTO.FireDTO;
-import com.safetynet.safetynetalerts.DTO.PersonByFirestationNumberDTO;
-import com.safetynet.safetynetalerts.DTO.PersonCoveredByItsFirestationNumberDTO;
-import com.safetynet.safetynetalerts.DTO.PersonInfoForFireDTO;
+import com.safetynet.safetynetalerts.DTO.*;
 import com.safetynet.safetynetalerts.mapper.Mapper;
 import com.safetynet.safetynetalerts.model.Firestation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
@@ -12,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,19 +95,28 @@ public class PersonService {
         }
     }
 
-    public PersonCoveredByItsFirestationNumberDTO personCoveredByItsFirestationNumber(int station){
+    public List<Person> findAllPersonsByItsFirestationNumber(int station){
         List<Firestation> firestationList = dataService.getFirestations().stream()
                 .filter(x -> x.getStation() == station)
                 .collect(Collectors.toList());
 
-        List<PersonByFirestationNumberDTO> personList = dataService.getPersons().stream()
+        List<Person> personList = dataService.getPersons().stream()
                 .filter(add -> firestationList.stream().map(Firestation::getAddress).anyMatch(address -> address.equals(add.getAddress())))
+                .collect(Collectors.toList());
+
+        return personList;
+    }
+
+    public PersonCoveredByItsFirestationNumberDTO personCoveredByItsFirestationNumber(int station){
+        List<Person> personList = findAllPersonsByItsFirestationNumber(station);
+
+        List<PersonByFirestationNumberDTO> personByFirestationNumberDTOList = personList.stream()
                 .map(Mapper::toPersonByFirestationNumberDTO)
                 .collect(Collectors.toList());
 
         List<MedicalRecord> medicalRecordList = dataService.getMedicalrecords().stream()
-                .filter(x -> personList.stream().map(PersonByFirestationNumberDTO::getFirstName).anyMatch(firstName -> firstName.equals(x.getFirstName())))
-                .filter(x -> personList.stream().map(PersonByFirestationNumberDTO::getLastName).anyMatch(lastName -> lastName.equals(x.getLastName())))
+                .filter(x -> personByFirestationNumberDTOList.stream().map(PersonByFirestationNumberDTO::getFirstName).anyMatch(firstName -> firstName.equals(x.getFirstName())))
+                .filter(x -> personByFirestationNumberDTOList.stream().map(PersonByFirestationNumberDTO::getLastName).anyMatch(lastName -> lastName.equals(x.getLastName())))
                 .collect(Collectors.toList());
 
         int numberOfChildren = 0;
@@ -125,7 +129,7 @@ public class PersonService {
 
         int numberOfAdults = medicalRecordList.size() - numberOfChildren;
 
-        return new PersonCoveredByItsFirestationNumberDTO(personList, numberOfAdults, numberOfChildren);
+        return new PersonCoveredByItsFirestationNumberDTO(personByFirestationNumberDTOList, numberOfAdults, numberOfChildren);
     }
 
     public List<String> phoneAlertService(int firestationNumber){
@@ -144,7 +148,7 @@ public class PersonService {
 
     public FireDTO fireAlertService(String address){
         FireDTO fireDTO = new FireDTO();
-        List<PersonInfoForFireDTO> personInfoForFireDTOList = new ArrayList<>();
+        List<PersonInfoForFireAndFloodDTO> personInfoForFireAndFloodDTOList = new ArrayList<>();
 
         List<Person> personList = dataService.getPersons().stream()
                 .filter(x -> x.getAddress().equals(address))
@@ -154,28 +158,63 @@ public class PersonService {
                 .filter(add -> personList.stream().map(Person::getAddress).anyMatch(a -> a.equals(add.getAddress())))
                 .findFirst().get();
 
-        List<MedicalRecord> medicalRecordList = dataService.getMedicalrecords().stream()
-                .filter(p -> personList.stream().map(Person::getFirstName).anyMatch(firstName -> firstName.equals(p.getFirstName())))
-                .filter(p -> personList.stream().map(Person::getLastName).anyMatch(lastName -> lastName.equals(p.getLastName())))
-                .collect(Collectors.toList());
 
         personList.forEach(person ->{
-            MedicalRecord medicalRecord = medicalRecordList.stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
-            PersonInfoForFireDTO info = new PersonInfoForFireDTO();
+            MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
+            PersonInfoForFireAndFloodDTO info = new PersonInfoForFireAndFloodDTO();
             info.setLastName(person.getLastName());
             info.setFirstName(person.getFirstName());
             info.setPhone(person.getPhone());
             info.setAge(calculateService.calculateAge(medicalRecord.getBirthdate()));
             info.setAllergies(medicalRecord.getAllergies());
             info.setMedications(medicalRecord.getMedications());
-            personInfoForFireDTOList.add(info);
+            personInfoForFireAndFloodDTOList.add(info);
         });
 
-            fireDTO.setPersonInfoForFireDTOList(personInfoForFireDTOList);
+            fireDTO.setPersonInfoDTOList(personInfoForFireAndFloodDTOList);
             fireDTO.setStation(firestation.getStation());
 
         return fireDTO;
 
     }
 
+
+    public List<FloodDTO> floodByStationNumber(List<Integer> listOfStationNumbers){
+        List<FloodDTO> floodDTOList = new ArrayList<>();
+
+        listOfStationNumbers.forEach(station ->{
+            List<Person> personList = findAllPersonsByItsFirestationNumber(station);
+
+            Map<String, List<Person>> groupedByAddress = personList.stream().collect(Collectors.groupingBy(Person::getAddress));
+
+            FloodDTO floodDTO = new FloodDTO();
+            Map<String, List<PersonInfoForFireAndFloodDTO>> personCoveredByAddress = new HashMap<>();
+
+
+            groupedByAddress.forEach((address, person) ->{
+                List<PersonInfoForFireAndFloodDTO> personInfoForFireAndFloodDTOList = new ArrayList<>();
+                person.forEach(person1 -> {
+                    MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person1.getFirstName()) && p.getLastName().equals(person1.getLastName())).findFirst().get();
+                    PersonInfoForFireAndFloodDTO info = new PersonInfoForFireAndFloodDTO();
+                    info.setFirstName(person1.getFirstName());
+                    info.setLastName(person1.getLastName());
+                    info.setPhone(person1.getPhone());
+                    info.setAge(calculateService.calculateAge(medicalRecord.getBirthdate()));
+                    info.setAllergies(medicalRecord.getAllergies());
+                    info.setMedications(medicalRecord.getMedications());
+                    personInfoForFireAndFloodDTOList.add(info);
+                });
+
+                personCoveredByAddress.put(address, personInfoForFireAndFloodDTOList);
+            });
+
+            floodDTO.setPersonCoveredByAddress(personCoveredByAddress);
+            floodDTO.setStation(station);
+
+            floodDTOList.add(floodDTO);
+        });
+
+        return floodDTOList;
+
+    }
 }

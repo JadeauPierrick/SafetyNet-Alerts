@@ -3,6 +3,7 @@ package com.safetynet.safetynetalerts.controller;
 
 import com.safetynet.safetynetalerts.DTO.ChildAlertDTO;
 import com.safetynet.safetynetalerts.DTO.FireDTO;
+import com.safetynet.safetynetalerts.DTO.FloodDTO;
 import com.safetynet.safetynetalerts.DTO.PersonCoveredByItsFirestationNumberDTO;
 import com.safetynet.safetynetalerts.model.Firestation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
@@ -43,5 +44,10 @@ public class DTOController {
     @RequestMapping(value = "/fire", params = { "address" })
     public FireDTO fireAlert(@RequestParam("address") String address){
         return personService.fireAlertService(address);
+    }
+
+    @RequestMapping(value = "/flood/stations", params = { "stations" })
+    public List<FloodDTO> floodAlert(@RequestParam("stations") List<Integer> listOfStationNumbers){
+        return personService.floodByStationNumber(listOfStationNumbers);
     }
 }
