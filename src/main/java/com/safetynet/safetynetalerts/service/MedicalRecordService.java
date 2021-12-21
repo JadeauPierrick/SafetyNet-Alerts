@@ -84,38 +84,42 @@ public class MedicalRecordService {
     }
 
     public List<ChildAlertDTO> childAlertService(String address){
-        List<ChildAlertDTO> childAlertDTOList = new ArrayList<>();
-        List<AdultsInHouseDTO> adultsInHouseDTOList = new ArrayList<>();
-        List<ChildrenInHouseDTO> childrenInHouseDTOList = new ArrayList<>();
+        try {
+            List<ChildAlertDTO> childAlertDTOList = new ArrayList<>();
+            List<AdultsInHouseDTO> adultsInHouseDTOList = new ArrayList<>();
+            List<ChildrenInHouseDTO> childrenInHouseDTOList = new ArrayList<>();
 
-        List<Person> personList = dataService.getPersons().stream()
-                .filter(ad -> ad.getAddress().equals(address))
-                .collect(Collectors.toList());
+            List<Person> personList = dataService.getPersons().stream()
+                    .filter(ad -> ad.getAddress().equals(address))
+                    .collect(Collectors.toList());
 
-        personList.forEach(person -> {
-            MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
-            AdultsInHouseDTO adults = new AdultsInHouseDTO();
-            ChildrenInHouseDTO children = new ChildrenInHouseDTO();
-            int age = calculateService.calculateAge(medicalRecord.getBirthdate());
-            if (age <=18){
-                children.setFirstName(person.getFirstName());
-                children.setLastName(person.getLastName());
-                children.setAge(age);
-                childrenInHouseDTOList.add(children);
+            personList.forEach(person -> {
+                MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
+                AdultsInHouseDTO adults = new AdultsInHouseDTO();
+                ChildrenInHouseDTO children = new ChildrenInHouseDTO();
+                int age = calculateService.calculateAge(medicalRecord.getBirthdate());
+                if (age <=18){
+                    children.setFirstName(person.getFirstName());
+                    children.setLastName(person.getLastName());
+                    children.setAge(age);
+                    childrenInHouseDTOList.add(children);
+                }else {
+                    adults.setFirstName(person.getFirstName());
+                    adults.setLastName(person.getLastName());
+                    adults.setAge(age);
+                    adultsInHouseDTOList.add(adults);
+                }
+
+            });
+
+            if (childrenInHouseDTOList.isEmpty()){
+                childAlertDTOList.add(new ChildAlertDTO());
             }else {
-                adults.setFirstName(person.getFirstName());
-                adults.setLastName(person.getLastName());
-                adults.setAge(age);
-                adultsInHouseDTOList.add(adults);
+                childAlertDTOList.add(new ChildAlertDTO(childrenInHouseDTOList, adultsInHouseDTOList));
             }
-
-        });
-
-        if (childrenInHouseDTOList.isEmpty()){
-            childAlertDTOList.add(new ChildAlertDTO());
-        }else {
-            childAlertDTOList.add(new ChildAlertDTO(childrenInHouseDTOList, adultsInHouseDTOList));
+            return childAlertDTOList;
+        }catch (Exception exception){
+            return null;
         }
-        return childAlertDTOList;
     }
 }
