@@ -215,6 +215,39 @@ public class PersonService {
         });
 
         return floodDTOList;
+    }
 
+    public List<PersonInfoDTO> personInfoService(String firstName, String lastName){
+        List<PersonInfoDTO> personInfoDTOList = new ArrayList<>();
+
+        List<Person> personList = dataService.getPersons().stream()
+                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                .collect(Collectors.toList());
+
+        personList.forEach(person -> {
+            MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
+            PersonInfoDTO personInfoDTO = new PersonInfoDTO();
+            personInfoDTO.setFirstName(person.getFirstName());
+            personInfoDTO.setLastName(person.getLastName());
+            personInfoDTO.setAddress(person.getAddress());
+            personInfoDTO.setAge(calculateService.calculateAge(medicalRecord.getBirthdate()));
+            personInfoDTO.setEmail(person.getEmail());
+            personInfoDTO.setMedications(medicalRecord.getMedications());
+            personInfoDTO.setAllergies(medicalRecord.getAllergies());
+            personInfoDTOList.add(personInfoDTO);
+        });
+
+
+        return personInfoDTOList;
+    }
+
+    public List<String> emailService(String city){
+        List<String> emailList = dataService.getPersons().stream()
+                .filter(x -> x.getCity().equals(city))
+                .map(Person::getEmail)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return emailList;
     }
 }
