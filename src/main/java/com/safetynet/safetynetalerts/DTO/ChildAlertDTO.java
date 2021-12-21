@@ -2,17 +2,17 @@ package com.safetynet.safetynetalerts.DTO;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ChildAlertDTO {
 
-    private String firstName;
-    private String lastName;
-    private int age;
+    private List<ChildrenInHouseDTO> children;
+    private List<AdultsInHouseDTO> adults;
 
-    public ChildAlertDTO(String firstName, String lastName, int age) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
+    public ChildAlertDTO(List<ChildrenInHouseDTO> children, List<AdultsInHouseDTO> adults) {
+        this.children = children;
+        this.adults = adults;
     }
 
     public ChildAlertDTO() {

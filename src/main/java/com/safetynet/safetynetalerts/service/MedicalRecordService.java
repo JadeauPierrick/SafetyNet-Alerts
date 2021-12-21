@@ -1,6 +1,8 @@
 package com.safetynet.safetynetalerts.service;
 
+import com.safetynet.safetynetalerts.DTO.AdultsInHouseDTO;
 import com.safetynet.safetynetalerts.DTO.ChildAlertDTO;
+import com.safetynet.safetynetalerts.DTO.ChildrenInHouseDTO;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,22 +85,37 @@ public class MedicalRecordService {
 
     public List<ChildAlertDTO> childAlertService(String address){
         List<ChildAlertDTO> childAlertDTOList = new ArrayList<>();
+        List<AdultsInHouseDTO> adultsInHouseDTOList = new ArrayList<>();
+        List<ChildrenInHouseDTO> childrenInHouseDTOList = new ArrayList<>();
 
         List<Person> personList = dataService.getPersons().stream()
                 .filter(ad -> ad.getAddress().equals(address))
                 .collect(Collectors.toList());
 
+        personList.forEach(person -> {
+            MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
+            AdultsInHouseDTO adults = new AdultsInHouseDTO();
+            ChildrenInHouseDTO children = new ChildrenInHouseDTO();
+            int age = calculateService.calculateAge(medicalRecord.getBirthdate());
+            if (age <=18){
+                children.setFirstName(person.getFirstName());
+                children.setLastName(person.getLastName());
+                children.setAge(age);
+                childrenInHouseDTOList.add(children);
+            }else {
+                adults.setFirstName(person.getFirstName());
+                adults.setLastName(person.getLastName());
+                adults.setAge(age);
+                adultsInHouseDTOList.add(adults);
+            }
 
-        List<MedicalRecord> mdList = dataService.getMedicalrecords().stream()
-                .filter(x -> personList.stream().map(Person::getFirstName).anyMatch(firstName -> firstName.equals(x.getFirstName())))
-                .filter(x -> personList.stream().map(Person::getLastName).anyMatch(lastName -> lastName.equals(x.getLastName())))
-                .collect(Collectors.toList());
+        });
 
-        for (MedicalRecord medicalRecord : mdList) {
-            childAlertDTOList.add(new ChildAlertDTO(medicalRecord.getFirstName(), medicalRecord.getLastName(), calculateService.calculateAge(medicalRecord.getBirthdate())));
+        if (childrenInHouseDTOList.isEmpty()){
+            childAlertDTOList.add(new ChildAlertDTO());
+        }else {
+            childAlertDTOList.add(new ChildAlertDTO(childrenInHouseDTOList, adultsInHouseDTOList));
         }
-
         return childAlertDTOList;
-
     }
 }

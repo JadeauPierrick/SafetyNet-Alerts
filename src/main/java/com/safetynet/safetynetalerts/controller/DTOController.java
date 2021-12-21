@@ -14,9 +14,6 @@ import java.util.List;
 public class DTOController {
 
     @Autowired
-    private FirestationService firestationService;
-
-    @Autowired
     private PersonService personService;
 
     @Autowired
