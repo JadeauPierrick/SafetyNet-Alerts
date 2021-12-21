@@ -2,10 +2,10 @@ package com.safetynet.safetynetalerts.controller;
 
 
 import com.safetynet.safetynetalerts.DTO.*;
-import com.safetynet.safetynetalerts.model.Firestation;
-import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,37 +24,72 @@ public class DTOController {
 
 
     @RequestMapping(value = "/firestation", params = { "stationNumber" })
-    public PersonCoveredByItsFirestationNumberDTO personCoveredByItsFirestationNumberDTOList(@RequestParam("stationNumber") int stationNumber){
-        return personService.personCoveredByItsFirestationNumber(stationNumber);
+    public ResponseEntity<PersonCoveredByItsFirestationNumberDTO> personCoveredByItsFirestationNumberDTOList(@RequestParam("stationNumber") int stationNumber){
+        PersonCoveredByItsFirestationNumberDTO person = personService.personCoveredByItsFirestationNumber(stationNumber);
+        if (person == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            return new ResponseEntity<>(person, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/childAlert", params = { "address" })
-    public List<ChildAlertDTO> childAlert(@RequestParam("address") String address){
-        return medicalRecordService.childAlertService(address);
+    public ResponseEntity<List<ChildAlertDTO>> childAlert(@RequestParam("address") String address){
+        if (address == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            List<ChildAlertDTO> childAlertDTOList = medicalRecordService.childAlertService(address);
+            return new ResponseEntity<>(childAlertDTOList, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/phoneAlert", params = { "firestation" })
-    public List<String> phoneAlert(@RequestParam("firestation") int firestationNumber){
-        return personService.phoneAlertService(firestationNumber);
+    public ResponseEntity<List<String>> phoneAlert(@RequestParam("firestation") int firestationNumber){
+        List<String> phoneList = personService.phoneAlertService(firestationNumber);
+        if (phoneList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            return new ResponseEntity<>(phoneList, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/fire", params = { "address" })
-    public FireDTO fireAlert(@RequestParam("address") String address){
-        return personService.fireAlertService(address);
+    public ResponseEntity<FireDTO> fireAlert(@RequestParam("address") String address){
+        if (address == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            FireDTO fireDTO = personService.fireAlertService(address);
+            return new ResponseEntity<>(fireDTO, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/flood/stations", params = { "stations" })
-    public List<FloodDTO> floodAlert(@RequestParam("stations") List<Integer> listOfStationNumbers){
-        return personService.floodByStationNumber(listOfStationNumbers);
+    public ResponseEntity<List<FloodDTO>> floodAlert(@RequestParam("stations") List<Integer> listOfStationNumbers){
+        if (listOfStationNumbers.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            List<FloodDTO> floodDTOList = personService.floodByStationNumber(listOfStationNumbers);
+            return new ResponseEntity<>(floodDTOList, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/personInfo", params = { "firstName", "lastName" })
-    public List<PersonInfoDTO> personInfoAlert(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName){
-        return personService.personInfoService(firstName, lastName);
+    public ResponseEntity<List<PersonInfoDTO>> personInfoAlert(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName){
+        if (firstName == null || lastName == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            List<PersonInfoDTO> personInfoDTOList = personService.personInfoService(firstName, lastName);
+            return new ResponseEntity<>(personInfoDTOList, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/communityEmail", params = { "city" })
-    public List<String> emailAlert(@RequestParam("city") String city){
-        return personService.emailService(city);
+    public ResponseEntity<List<String>> emailAlert(@RequestParam("city") String city){
+        if (city == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            List<String> emailList = personService.emailService(city);
+            return new ResponseEntity<>(emailList, HttpStatus.OK);
+        }
     }
 }
