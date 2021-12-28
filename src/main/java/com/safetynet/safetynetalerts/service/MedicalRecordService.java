@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +29,12 @@ public class MedicalRecordService {
     public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
         try {
             List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
-            Optional<MedicalRecord> medicalRecord = medicalRecordsList.stream()
+            MedicalRecord medicalRecord = medicalRecordsList.stream()
                     .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                    .findFirst();
-            return medicalRecord.get();
+                    .findFirst()
+                    .get();
+
+            return medicalRecord;
         } catch (Exception exception) {
             return null;
         }
@@ -70,13 +71,10 @@ public class MedicalRecordService {
 
     public boolean deleteMedicalRecord(String firstName, String lastName){
         try {
-            List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
-            MedicalRecord medicalRecord = medicalRecordsList.stream()
-                    .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                    .findFirst()
-                    .get();
+            List<MedicalRecord> medicalRecordsList = displayMedicalRecords();
+            MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
 
-            medicalRecordsList.remove(medicalRecord);
+            medicalRecordsList.remove(md);
             return true;
         }catch (Exception exception){
             return false;

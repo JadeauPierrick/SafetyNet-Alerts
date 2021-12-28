@@ -83,10 +83,7 @@ public class PersonService {
     public boolean deletePerson(String firstName, String lastName) {
         try {
             List<Person> personList = dataService.getPersons();
-            Person person = personList.stream()
-                    .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                    .findFirst()
-                    .get();
+            Person person = findPersonByFirstNameAndLastName(firstName, lastName);
 
             personList.remove(person);
             return true;
