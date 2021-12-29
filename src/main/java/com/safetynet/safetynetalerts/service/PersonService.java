@@ -27,73 +27,66 @@ public class PersonService {
     }
 
     public Person findPersonByFirstNameAndLastName(String firstName, String lastName) {
-        try {
-            List<Person> personList = dataService.getPersons();
-            Optional<Person> person = personList.stream()
-                    .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                    .findFirst();
+        List<Person> personList = dataService.getPersons();
+        Optional<Person> person = personList.stream()
+                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                .findFirst();
 
-            return person.get();
-        }catch (Exception exception){
-            return null;
-        }
+        return person.orElse(null);
     }
 
     public Person savePerson(Person person) {
-        try {
+        if (person != null) {
             List<Person> personList = dataService.getPersons();
             personList.add(person);
             return person;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
     public Person updatePerson(String firstName, String lastName, Person person){
-        try {
-            Person ps = findPersonByFirstNameAndLastName(firstName, lastName);
-
+        Person ps = findPersonByFirstNameAndLastName(firstName, lastName);
+        if (ps != null) {
             String address = person.getAddress();
-            if (address != null){
+            if (address != null) {
                 ps.setAddress(address);
             }
             String city = person.getCity();
-            if (city != null){
+            if (city != null) {
                 ps.setCity(city);
             }
             int zip = person.getZip();
-            if (zip != 0){
+            if (zip != 0) {
                 ps.setZip(zip);
             }
             String phone = person.getPhone();
-            if (phone != null){
+            if (phone != null) {
                 ps.setPhone(phone);
             }
             String email = person.getEmail();
-            if (email != null){
+            if (email != null) {
                 ps.setEmail(email);
             }
             savePerson(ps);
             return ps;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
-    public boolean deletePerson(String firstName, String lastName) {
-        try {
-            List<Person> personList = dataService.getPersons();
-            Person person = findPersonByFirstNameAndLastName(firstName, lastName);
-
+    public boolean deletePerson(String firstName, String lastName){
+        List<Person> personList = dataService.getPersons();
+        Person person = findPersonByFirstNameAndLastName(firstName, lastName);
+        if (person != null){
             personList.remove(person);
             return true;
-        }catch (Exception exception){
+        }else {
             return false;
         }
     }
 
     public List<Person> findAllPersonsByItsFirestationNumber(int station){
-        try{
             List<Firestation> firestationList = dataService.getFirestations().stream()
                     .filter(x -> x.getStation() == station)
                     .collect(Collectors.toList());
@@ -103,13 +96,10 @@ public class PersonService {
                     .collect(Collectors.toList());
 
             return personList;
-        }catch (Exception exception){
-            return null;
-        }
     }
 
-    public PersonCoveredByItsFirestationNumberDTO personCoveredByItsFirestationNumber(int station){
-        try{
+    public PersonCoveredByItsFirestationNumberDTO personCoveredByItsFirestationNumber(Integer station){
+        if (station != null){
             List<Person> personList = findAllPersonsByItsFirestationNumber(station);
 
             List<PersonByFirestationNumberDTO> personByFirestationNumberDTOList = personList.stream()
@@ -132,13 +122,13 @@ public class PersonService {
             int numberOfAdults = medicalRecordList.size() - numberOfChildren;
 
             return new PersonCoveredByItsFirestationNumberDTO(personByFirestationNumberDTOList, numberOfAdults, numberOfChildren);
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
-    public List<String> phoneAlertService(int firestationNumber){
-        try {
+    public List<String> phoneAlertService(Integer firestationNumber){
+        if (firestationNumber != null){
             List<Firestation> firestationList = dataService.getFirestations().stream()
                     .filter(x -> x.getStation() == firestationNumber)
                     .collect(Collectors.toList());
@@ -150,13 +140,13 @@ public class PersonService {
                     .collect(Collectors.toList());
 
             return phoneList;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
     public FireDTO fireAlertService(String address){
-        try {
+        if (address != null){
             FireDTO fireDTO = new FireDTO();
             List<PersonInfoForFireAndFloodDTO> personInfoForFireAndFloodDTOList = new ArrayList<>();
 
@@ -185,14 +175,13 @@ public class PersonService {
             fireDTO.setStation(firestation.getStation());
 
             return fireDTO;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
 
     public List<FloodDTO> floodByStationNumber(List<Integer> listOfStationNumbers){
-        try {
             List<FloodDTO> floodDTOList = new ArrayList<>();
 
             listOfStationNumbers.forEach(station ->{
@@ -228,13 +217,9 @@ public class PersonService {
             });
 
             return floodDTOList;
-        }catch (Exception exception){
-            return null;
-        }
     }
 
     public List<PersonInfoDTO> personInfoService(String firstName, String lastName){
-        try {
             List<PersonInfoDTO> personInfoDTOList = new ArrayList<>();
 
             List<Person> personList = dataService.getPersons().stream()
@@ -256,13 +241,9 @@ public class PersonService {
 
 
             return personInfoDTOList;
-        }catch (Exception exception){
-            return null;
-        }
     }
 
     public List<String> emailService(String city){
-        try {
             List<String> emailList = dataService.getPersons().stream()
                     .filter(x -> x.getCity().equals(city))
                     .map(Person::getEmail)
@@ -270,8 +251,5 @@ public class PersonService {
                     .collect(Collectors.toList());
 
             return emailList;
-        }catch (Exception exception){
-            return null;
-        }
     }
 }

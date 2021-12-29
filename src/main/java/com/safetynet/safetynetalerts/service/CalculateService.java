@@ -12,9 +12,6 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class CalculateService {
 
-    @Autowired
-    private DataService dataService;
-
     public int calculateAge(final String birthday) {
         log.debug("start CalculateService");
         try{

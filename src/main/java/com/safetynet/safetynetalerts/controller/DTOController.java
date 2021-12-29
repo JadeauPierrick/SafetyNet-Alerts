@@ -3,6 +3,7 @@ package com.safetynet.safetynetalerts.controller;
 
 import com.safetynet.safetynetalerts.DTO.*;
 import com.safetynet.safetynetalerts.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 public class DTOController {
 
@@ -21,10 +23,11 @@ public class DTOController {
 
 
     @RequestMapping(value = "/firestation", params = { "stationNumber" })
-    public ResponseEntity<PersonCoveredByItsFirestationNumberDTO> personCoveredByItsFirestationNumberDTOList(@RequestParam("stationNumber") int stationNumber){
+    public ResponseEntity<PersonCoveredByItsFirestationNumberDTO> personCoveredByItsFirestationNumberDTOList(@RequestParam("stationNumber") Integer stationNumber){
         PersonCoveredByItsFirestationNumberDTO person = personService.personCoveredByItsFirestationNumber(stationNumber);
-        if (person == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (stationNumber == null){
+            log.error("The station number is not correct");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
             return new ResponseEntity<>(person, HttpStatus.OK);
         }
@@ -34,21 +37,10 @@ public class DTOController {
     public ResponseEntity<List<ChildAlertDTO>> childAlert(@RequestParam("address") String address){
         List<ChildAlertDTO> childAlertDTOList = medicalRecordService.childAlertService(address);
         if (address == null){
+            log.error("The address is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else if (childAlertDTOList == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else {
             return new ResponseEntity<>(childAlertDTOList, HttpStatus.OK);
-        }
-    }
-
-    @RequestMapping(value = "/phoneAlert", params = { "firestation" })
-    public ResponseEntity<List<String>> phoneAlert(@RequestParam("firestation") int firestationNumber){
-        List<String> phoneList = personService.phoneAlertService(firestationNumber);
-        if (phoneList.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else {
-            return new ResponseEntity<>(phoneList, HttpStatus.OK);
         }
     }
 
@@ -56,9 +48,8 @@ public class DTOController {
     public ResponseEntity<FireDTO> fireAlert(@RequestParam("address") String address){
         FireDTO fireDTO = personService.fireAlertService(address);
         if (address == null){
+            log.error("The address is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else if (fireDTO == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else {
             return new ResponseEntity<>(fireDTO, HttpStatus.OK);
         }
@@ -68,9 +59,8 @@ public class DTOController {
     public ResponseEntity<List<FloodDTO>> floodAlert(@RequestParam("stations") List<Integer> listOfStationNumbers){
         List<FloodDTO> floodDTOList = personService.floodByStationNumber(listOfStationNumbers);
         if (listOfStationNumbers.isEmpty()){
+            log.error("Your list must contain valid station numbers");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else if (floodDTOList == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else {
             return new ResponseEntity<>(floodDTOList, HttpStatus.OK);
         }
@@ -80,23 +70,10 @@ public class DTOController {
     public ResponseEntity<List<PersonInfoDTO>> personInfoAlert(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName){
         List<PersonInfoDTO> personInfoDTOList = personService.personInfoService(firstName, lastName);
         if (firstName == null || lastName == null){
+            log.error("The first or the last name is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else if (personInfoDTOList == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else {
             return new ResponseEntity<>(personInfoDTOList, HttpStatus.OK);
-        }
-    }
-
-    @RequestMapping(value = "/communityEmail", params = { "city" })
-    public ResponseEntity<List<String>> emailAlert(@RequestParam("city") String city){
-        List<String> emailList = personService.emailService(city);
-        if (city == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else if (emailList == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }else {
-            return new ResponseEntity<>(emailList, HttpStatus.OK);
         }
     }
 }

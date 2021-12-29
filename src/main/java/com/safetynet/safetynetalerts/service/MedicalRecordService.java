@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,33 +28,27 @@ public class MedicalRecordService {
     }
 
     public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
-        try {
-            List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
-            MedicalRecord medicalRecord = medicalRecordsList.stream()
-                    .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                    .findFirst()
-                    .get();
+        List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
+        Optional<MedicalRecord> medicalRecord = medicalRecordsList.stream()
+                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                .findFirst();
 
-            return medicalRecord;
-        } catch (Exception exception) {
-            return null;
-        }
+        return medicalRecord.orElse(null);
     }
 
     public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecord){
-        try {
+        if (medicalRecord != null){
             List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
             medicalRecordsList.add(medicalRecord);
             return medicalRecord;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
     public MedicalRecord updateMedicalRecord(String firstName, String lastName, MedicalRecord medicalRecord){
-        try {
-            MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
-
+        MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
+        if (md != null){
             List<String> medications = medicalRecord.getMedications();
             if (medications != null){
                 md.setMedications(medications);
@@ -64,25 +59,24 @@ public class MedicalRecordService {
             }
             saveMedicalRecord(md);
             return md;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
     public boolean deleteMedicalRecord(String firstName, String lastName){
-        try {
-            List<MedicalRecord> medicalRecordsList = displayMedicalRecords();
-            MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
-
+        List<MedicalRecord> medicalRecordsList = displayMedicalRecords();
+        MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
+        if (md != null){
             medicalRecordsList.remove(md);
             return true;
-        }catch (Exception exception){
+        }else {
             return false;
         }
     }
 
     public List<ChildAlertDTO> childAlertService(String address){
-        try {
+        if (address != null){
             List<ChildAlertDTO> childAlertDTOList = new ArrayList<>();
             List<AdultsInHouseDTO> adultsInHouseDTOList = new ArrayList<>();
             List<ChildrenInHouseDTO> childrenInHouseDTOList = new ArrayList<>();
@@ -116,7 +110,7 @@ public class MedicalRecordService {
                 childAlertDTOList.add(new ChildAlertDTO(childrenInHouseDTOList, adultsInHouseDTOList));
             }
             return childAlertDTOList;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }

@@ -1,11 +1,11 @@
 package com.safetynet.safetynetalerts.service;
 
-import com.safetynet.safetynetalerts.DTO.FloodDTO;
 import com.safetynet.safetynetalerts.model.Firestation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FirestationService {
@@ -19,55 +19,45 @@ public class FirestationService {
     }
 
     public Firestation findFirestationByAddress(String address) {
-        try {
-            List<Firestation> firestationList = dataService.getFirestations();
-            Firestation firestation = firestationList.stream()
-                    .filter(x -> x.getAddress().equals(address))
-                    .findFirst()
-                    .get();
+        List<Firestation> firestationList = dataService.getFirestations();
+        Optional<Firestation> firestation = firestationList.stream()
+                .filter(x -> x.getAddress().equals(address))
+                .findFirst();
 
-            return firestation;
-        } catch (Exception exception) {
-            return null;
-        }
+        return firestation.orElse(null);
     }
 
     public Firestation saveFirestation(Firestation firestation) {
-        try {
+        if (firestation != null){
             List<Firestation> firestationList = dataService.getFirestations();
             firestationList.add(firestation);
             return firestation;
-        }catch (Exception exception){
+        }else {
             return null;
         }
     }
 
     public Firestation updateFirestation(String address, Firestation firestation) {
-        try {
-            Firestation fs = findFirestationByAddress(address);
-
+        Firestation fs = findFirestationByAddress(address);
+        if (fs != null){
             int station = firestation.getStation();
             if (station != 0) {
                 fs.setStation(station);
             }
             saveFirestation(fs);
             return fs;
-        } catch (Exception exception) {
+        }else {
             return null;
         }
     }
 
     public boolean deleteFirestation(String address) {
-        try {
-            List<Firestation> firestationList = dataService.getFirestations();
-            Firestation firestation = firestationList.stream()
-                    .filter(x -> x.getAddress().equals(address))
-                    .findFirst()
-                    .get();
-
-            firestationList.remove(firestation);
+        List<Firestation> firestationList = dataService.getFirestations();
+        Firestation fs = findFirestationByAddress(address);
+        if (fs != null){
+            firestationList.remove(fs);
             return true;
-        } catch (Exception exception) {
+        }else {
             return false;
         }
     }
