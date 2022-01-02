@@ -23,7 +23,7 @@ public class MedicalRecordService {
     private CalculateService calculateService;
 
 
-    public List<MedicalRecord> displayMedicalRecords(){
+    public List<MedicalRecord> displayMedicalRecords() {
         return dataService.getMedicalrecords();
     }
 
@@ -36,47 +36,47 @@ public class MedicalRecordService {
         return medicalRecord.orElse(null);
     }
 
-    public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecord){
-        if (medicalRecord != null){
+    public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecord) {
+        if (medicalRecord != null) {
             List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
             medicalRecordsList.add(medicalRecord);
             return medicalRecord;
-        }else {
+        } else {
             return null;
         }
     }
 
-    public MedicalRecord updateMedicalRecord(String firstName, String lastName, MedicalRecord medicalRecord){
+    public MedicalRecord updateMedicalRecord(String firstName, String lastName, MedicalRecord medicalRecord) {
         MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
-        if (md != null){
+        if (md != null) {
             List<String> medications = medicalRecord.getMedications();
-            if (medications != null){
+            if (medications != null) {
                 md.setMedications(medications);
             }
             List<String> allergies = medicalRecord.getAllergies();
-            if (allergies != null){
+            if (allergies != null) {
                 md.setAllergies(allergies);
             }
             saveMedicalRecord(md);
             return md;
-        }else {
+        } else {
             return null;
         }
     }
 
-    public boolean deleteMedicalRecord(String firstName, String lastName){
-        List<MedicalRecord> medicalRecordsList = displayMedicalRecords();
+    public boolean deleteMedicalRecord(String firstName, String lastName) {
+        List<MedicalRecord> medicalRecordsList = dataService.getMedicalrecords();
         MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
-        if (md != null){
+        if (md != null) {
             medicalRecordsList.remove(md);
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
-    public List<ChildAlertDTO> childAlertService(String address){
-        if (address != null){
+    public List<ChildAlertDTO> childAlertService(String address) {
+        if (address != null) {
             List<ChildAlertDTO> childAlertDTOList = new ArrayList<>();
             List<AdultsInHouseDTO> adultsInHouseDTOList = new ArrayList<>();
             List<ChildrenInHouseDTO> childrenInHouseDTOList = new ArrayList<>();
@@ -90,12 +90,12 @@ public class MedicalRecordService {
                 AdultsInHouseDTO adults = new AdultsInHouseDTO();
                 ChildrenInHouseDTO children = new ChildrenInHouseDTO();
                 int age = calculateService.calculateAge(medicalRecord.getBirthdate());
-                if (age <=18){
+                if (age <= 18) {
                     children.setFirstName(person.getFirstName());
                     children.setLastName(person.getLastName());
                     children.setAge(age);
                     childrenInHouseDTOList.add(children);
-                }else {
+                } else {
                     adults.setFirstName(person.getFirstName());
                     adults.setLastName(person.getLastName());
                     adults.setAge(age);
@@ -104,13 +104,13 @@ public class MedicalRecordService {
 
             });
 
-            if (childrenInHouseDTOList.isEmpty()){
+            if (childrenInHouseDTOList.isEmpty()) {
                 childAlertDTOList.add(new ChildAlertDTO());
-            }else {
+            } else {
                 childAlertDTOList.add(new ChildAlertDTO(childrenInHouseDTOList, adultsInHouseDTOList));
             }
             return childAlertDTOList;
-        }else {
+        } else {
             return null;
         }
     }

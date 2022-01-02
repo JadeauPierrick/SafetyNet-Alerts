@@ -45,7 +45,7 @@ public class PersonController {
     public ResponseEntity<Person> createPerson(@RequestBody Person person){
         if(person == null){
             log.error("Your request does not contain all the necessary fields");
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else{
             Person newPerson = personService.savePerson(person);
             log.info("The person is created");
@@ -83,7 +83,7 @@ public class PersonController {
     @RequestMapping(value = "/phoneAlert", params = { "firestation" })
     public ResponseEntity<List<String>> phoneAlert(@RequestParam("firestation") Integer firestationNumber){
         List<String> phoneList = personService.phoneAlertService(firestationNumber);
-        if (firestationNumber == null) {
+        if (phoneList.isEmpty()) {
             log.error("The fire station number is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
@@ -94,7 +94,7 @@ public class PersonController {
     @RequestMapping(value = "/communityEmail", params = { "city" })
     public ResponseEntity<List<String>> emailAlert(@RequestParam("city") String city){
         List<String> emailList = personService.emailService(city);
-        if (city == null){
+        if (emailList.isEmpty()){
             log.error("The city is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {

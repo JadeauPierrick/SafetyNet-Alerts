@@ -2,12 +2,8 @@ package com.safetynet.safetynetalerts.model;
 
 import lombok.Data;
 
-import javax.persistence.Id;
-
-
 @Data
 public class Person {
-    @Id
     private String firstName;
     private String lastName;
     private String address;
