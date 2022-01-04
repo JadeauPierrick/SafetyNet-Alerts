@@ -44,7 +44,6 @@ public class FirestationService {
             if (station != 0) {
                 fs.setStation(station);
             }
-            saveFirestation(fs);
             return fs;
         }else {
             return null;

@@ -49,6 +49,10 @@ public class MedicalRecordService {
     public MedicalRecord updateMedicalRecord(String firstName, String lastName, MedicalRecord medicalRecord) {
         MedicalRecord md = findMedicalRecordByFirstNameAndLastName(firstName, lastName);
         if (md != null) {
+            String birthdate = medicalRecord.getBirthdate();
+            if (birthdate != null){
+                md.setBirthdate(birthdate);
+            }
             List<String> medications = medicalRecord.getMedications();
             if (medications != null) {
                 md.setMedications(medications);
@@ -57,7 +61,6 @@ public class MedicalRecordService {
             if (allergies != null) {
                 md.setAllergies(allergies);
             }
-            saveMedicalRecord(md);
             return md;
         } else {
             return null;
@@ -75,15 +78,17 @@ public class MedicalRecordService {
         }
     }
 
-    public List<ChildAlertDTO> childAlertService(String address) {
-        if (address != null) {
-            List<ChildAlertDTO> childAlertDTOList = new ArrayList<>();
-            List<AdultsInHouseDTO> adultsInHouseDTOList = new ArrayList<>();
-            List<ChildrenInHouseDTO> childrenInHouseDTOList = new ArrayList<>();
-
-            List<Person> personList = dataService.getPersons().stream()
+    public ChildAlertDTO childAlertService(String address) {
+        List<Person> personList = dataService.getPersons().stream()
                     .filter(ad -> ad.getAddress().equals(address))
                     .collect(Collectors.toList());
+
+        if (personList.isEmpty()) {
+            return null;
+        }else {
+            ChildAlertDTO childAlertDTO = new ChildAlertDTO();
+            List<AdultsInHouseDTO> adultsInHouseDTOList = new ArrayList<>();
+            List<ChildrenInHouseDTO> childrenInHouseDTOList = new ArrayList<>();
 
             personList.forEach(person -> {
                 MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
@@ -105,13 +110,12 @@ public class MedicalRecordService {
             });
 
             if (childrenInHouseDTOList.isEmpty()) {
-                childAlertDTOList.add(new ChildAlertDTO());
+                return childAlertDTO;
             } else {
-                childAlertDTOList.add(new ChildAlertDTO(childrenInHouseDTOList, adultsInHouseDTOList));
+                childAlertDTO.setChildren(childrenInHouseDTOList);
+                childAlertDTO.setAdults(adultsInHouseDTOList);
+                return childAlertDTO;
             }
-            return childAlertDTOList;
-        } else {
-            return null;
         }
     }
 }

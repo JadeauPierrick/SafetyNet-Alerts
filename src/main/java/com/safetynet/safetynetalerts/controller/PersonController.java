@@ -87,6 +87,7 @@ public class PersonController {
             log.error("The fire station number is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
+            log.info("Your request has been made");
             return new ResponseEntity<>(phoneList, HttpStatus.OK);
         }
     }
@@ -98,6 +99,7 @@ public class PersonController {
             log.error("The city is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
+            log.info("Your request has been made");
             return new ResponseEntity<>(emailList, HttpStatus.OK);
         }
     }

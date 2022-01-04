@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.DTO;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ public class PersonInfoDTOTest {
     public void testGetFirstName(){
         String firstName = "Nelson";
 
-        personInfoDTO = new PersonInfoDTO("Nelson","","",9,"",new ArrayList<>(),new ArrayList<>());
+        personInfoDTO = new PersonInfoDTO();
+        personInfoDTO.setFirstName(firstName);
 
         assertThat(firstName).isEqualTo(personInfoDTO.getFirstName());
     }
@@ -24,7 +26,8 @@ public class PersonInfoDTOTest {
     public void testGetLastName(){
         String lastName = "Moris";
 
-        personInfoDTO = new PersonInfoDTO("","Moris","",19,"",new ArrayList<>(),new ArrayList<>());
+        personInfoDTO = new PersonInfoDTO();
+        personInfoDTO.setLastName(lastName);
 
         assertThat(lastName).isEqualTo(personInfoDTO.getLastName());
     }
@@ -33,7 +36,8 @@ public class PersonInfoDTOTest {
     public void testGetAddress(){
         String address = "51 Campbell St";
 
-        personInfoDTO = new PersonInfoDTO("","","51 Campbell St",15,"",new ArrayList<>(),new ArrayList<>());
+        personInfoDTO = new PersonInfoDTO();
+        personInfoDTO.setAddress(address);
 
         assertThat(address).isEqualTo(personInfoDTO.getAddress());
     }
@@ -42,7 +46,8 @@ public class PersonInfoDTOTest {
     public void testGetAge(){
         int age = 17;
 
-        personInfoDTO = new PersonInfoDTO("","","",17,"",new ArrayList<>(),new ArrayList<>());
+        personInfoDTO = new PersonInfoDTO();
+        personInfoDTO.setAge(age);
 
         assertThat(age).isEqualTo(personInfoDTO.getAge());
     }
@@ -51,20 +56,16 @@ public class PersonInfoDTOTest {
     public void testGetEmail(){
         String email = "fd@email.com";
 
-        personInfoDTO = new PersonInfoDTO("","","",51,"fd@email.com",new ArrayList<>(),new ArrayList<>());
+        personInfoDTO = new PersonInfoDTO();
+        personInfoDTO.setEmail(email);
 
         assertThat(email).isEqualTo(personInfoDTO.getEmail());
     }
 
     @Test
     public void testPersonInfoDTO(){
-        personInfoDTO = new PersonInfoDTO();
+        personInfoDTO = new PersonInfoDTO("Nelson","Moris","51 Campbell St",14,"nm@email.com",new ArrayList<>(),new ArrayList<>());
 
-        personInfoDTO.setFirstName("Nelson");
-        personInfoDTO.setLastName("Moris");
-        personInfoDTO.setAddress("51 Campbell St");
-        personInfoDTO.setAge(14);
-        personInfoDTO.setEmail("nm@email.com");
         List<String> medications = new ArrayList<>();
         medications.add("aznol");
         personInfoDTO.setMedications(medications);
@@ -72,14 +73,17 @@ public class PersonInfoDTOTest {
         allergies.add("venin");
         personInfoDTO.setAllergies(allergies);
 
-        assertThat(personInfoDTO.getFirstName()).isEqualTo("Nelson");
-        assertThat(personInfoDTO.getLastName()).isEqualTo("Moris");
-        assertThat(personInfoDTO.getAddress()).isEqualTo("51 Campbell St");
-        assertThat(personInfoDTO.getAge()).isEqualTo(14);
-        assertThat(personInfoDTO.getEmail()).isEqualTo("nm@email.com");
-        assertThat(personInfoDTO.getMedications()).isEqualTo(medications);
-        assertThat(personInfoDTO.getAllergies()).isEqualTo(allergies);
+        assertThat("Nelson").isEqualTo(personInfoDTO.getFirstName());
+        assertThat("Moris").isEqualTo(personInfoDTO.getLastName());
+        assertThat("51 Campbell St").isEqualTo(personInfoDTO.getAddress());
+        assertThat(14).isEqualTo(personInfoDTO.getAge());
+        assertThat("nm@email.com").isEqualTo(personInfoDTO.getEmail());
+        assertThat(medications).isEqualTo(personInfoDTO.getMedications());
+        assertThat(allergies).isEqualTo(personInfoDTO.getAllergies());
+    }
 
-
+    @Test
+    public void equalsContract(){
+        EqualsVerifier.simple().forClass(PersonInfoDTO.class).verify();
     }
 }

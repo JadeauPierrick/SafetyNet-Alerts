@@ -37,10 +37,24 @@ public class DTOControllerTest {
     }
 
     @Test
+    public void testPersonCoveredByItsFirestationNumberDTOListWithUnknownFirestationNumber() throws Exception {
+        mockMvc.perform(get("/firestation").contentType(APPLICATION_JSON)
+                .param("stationNumber","8"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testChildAlert() throws Exception {
         mockMvc.perform(get("/childAlert").contentType(APPLICATION_JSON)
                 .param("address", "1509 Culver St"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testChildAlertWithUnknownAddress() throws Exception {
+        mockMvc.perform(get("/childAlert").contentType(APPLICATION_JSON)
+                .param("address", "11 Oslo St"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -51,10 +65,24 @@ public class DTOControllerTest {
     }
 
     @Test
+    public void testFireAlertWithUnknownAddress() throws Exception {
+        mockMvc.perform(get("/fire").contentType(APPLICATION_JSON)
+                .param("address", "11 Oslo St"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testFloodAlert() throws Exception {
         mockMvc.perform(get("/flood/stations").contentType(APPLICATION_JSON)
                 .param("stations", "1,2"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testFloodAlertWithEmptyList() throws Exception {
+        mockMvc.perform(get("/flood/stations").contentType(APPLICATION_JSON)
+                .param("stations", ""))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -63,5 +91,13 @@ public class DTOControllerTest {
                 .param("firstName", "John")
                 .param("lastName", "Boyd"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testPersonInfoAlertWithUnknownFirstNameAndLastName() throws Exception {
+        mockMvc.perform(get("/personInfo").contentType(APPLICATION_JSON)
+                .param("firstName","Jacob")
+                .param("lastName","Dale"))
+                .andExpect(status().isBadRequest());
     }
 }

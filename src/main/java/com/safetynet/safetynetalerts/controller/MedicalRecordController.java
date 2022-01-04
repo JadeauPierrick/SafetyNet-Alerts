@@ -45,7 +45,7 @@ public class MedicalRecordController {
     public ResponseEntity<MedicalRecord> createMedicalRecord(@RequestBody MedicalRecord medicalRecord){
         if (medicalRecord == null){
             log.error("Your request does not contain all the necessary fields");
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
             MedicalRecord newMedicalRecord = medicalRecordService.saveMedicalRecord(medicalRecord);
             log.info("The medical record is created");

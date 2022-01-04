@@ -45,7 +45,7 @@ public class FirestationController {
     public ResponseEntity<Firestation> createFirestation(@RequestBody Firestation firestation){
         if(firestation == null){
             log.error("Your request does not contain all the necessary fields");
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else{
             Firestation newFirestation = firestationService.saveFirestation(firestation);
             log.info("The fire station is created");

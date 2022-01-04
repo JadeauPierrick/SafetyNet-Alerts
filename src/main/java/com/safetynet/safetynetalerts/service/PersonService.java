@@ -68,7 +68,6 @@ public class PersonService {
             if (email != null) {
                 ps.setEmail(email);
             }
-            savePerson(ps);
             return ps;
         }else {
             return null;
@@ -99,9 +98,10 @@ public class PersonService {
     }
 
     public PersonCoveredByItsFirestationNumberDTO personCoveredByItsFirestationNumber(Integer station){
-        if (station != null){
-            List<Person> personList = findAllPersonsByItsFirestationNumber(station);
-
+        List<Person> personList = findAllPersonsByItsFirestationNumber(station);
+        if(personList.isEmpty()) {
+            return null;
+        }else {
             List<PersonByFirestationNumberDTO> personByFirestationNumberDTOList = personList.stream()
                     .map(Mapper::toPersonByFirestationNumberDTO)
                     .collect(Collectors.toList());
@@ -122,8 +122,6 @@ public class PersonService {
             int numberOfAdults = medicalRecordList.size() - numberOfChildren;
 
             return new PersonCoveredByItsFirestationNumberDTO(personByFirestationNumberDTOList, numberOfAdults, numberOfChildren);
-        }else {
-            return null;
         }
     }
 
@@ -145,21 +143,23 @@ public class PersonService {
         }
     }
 
-    public FireDTO fireAlertService(String address){
-        if (address != null){
-            FireDTO fireDTO = new FireDTO();
-            List<PersonInfoForFireAndFloodDTO> personInfoForFireAndFloodDTOList = new ArrayList<>();
+    public FireDTO fireAlertService(String address) {
+        FireDTO fireDTO = new FireDTO();
+        List<PersonInfoForFireAndFloodDTO> personInfoForFireAndFloodDTOList = new ArrayList<>();
 
-            List<Person> personList = dataService.getPersons().stream()
-                    .filter(x -> x.getAddress().equals(address))
-                    .collect(Collectors.toList());
+        List<Person> personList = dataService.getPersons().stream()
+                .filter(x -> x.getAddress().equals(address))
+                .collect(Collectors.toList());
 
+        if (personList.isEmpty()) {
+            return null;
+        } else {
             Firestation firestation = dataService.getFirestations().stream()
                     .filter(add -> personList.stream().map(Person::getAddress).anyMatch(a -> a.equals(add.getAddress())))
                     .findFirst().get();
 
 
-            personList.forEach(person ->{
+            personList.forEach(person -> {
                 MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
                 PersonInfoForFireAndFloodDTO info = new PersonInfoForFireAndFloodDTO();
                 info.setLastName(person.getLastName());
@@ -175,16 +175,17 @@ public class PersonService {
             fireDTO.setStation(firestation.getStation());
 
             return fireDTO;
-        }else {
-            return null;
         }
     }
 
 
-    public List<FloodDTO> floodByStationNumber(List<Integer> listOfStationNumbers){
+    public List<FloodDTO> floodByStationNumber(List<Integer> listOfStationNumbers) {
+        if (listOfStationNumbers.isEmpty()) {
+            return null;
+        } else {
             List<FloodDTO> floodDTOList = new ArrayList<>();
 
-            listOfStationNumbers.forEach(station ->{
+            listOfStationNumbers.forEach(station -> {
                 List<Person> personList = findAllPersonsByItsFirestationNumber(station);
 
                 Map<String, List<Person>> groupedByAddress = personList.stream().collect(Collectors.groupingBy(Person::getAddress));
@@ -193,7 +194,7 @@ public class PersonService {
                 Map<String, List<PersonInfoForFireAndFloodDTO>> personCoveredByAddress = new HashMap<>();
 
 
-                groupedByAddress.forEach((address, person) ->{
+                groupedByAddress.forEach((address, person) -> {
                     List<PersonInfoForFireAndFloodDTO> personInfoForFireAndFloodDTOList = new ArrayList<>();
                     person.forEach(person1 -> {
                         MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person1.getFirstName()) && p.getLastName().equals(person1.getLastName())).findFirst().get();
@@ -217,15 +218,19 @@ public class PersonService {
             });
 
             return floodDTOList;
+        }
     }
 
-    public List<PersonInfoDTO> personInfoService(String firstName, String lastName){
-            List<PersonInfoDTO> personInfoDTOList = new ArrayList<>();
+    public List<PersonInfoDTO> personInfoService(String firstName, String lastName) {
+        List<PersonInfoDTO> personInfoDTOList = new ArrayList<>();
 
-            List<Person> personList = dataService.getPersons().stream()
-                    .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
-                    .collect(Collectors.toList());
+        List<Person> personList = dataService.getPersons().stream()
+                .filter(x -> x.getFirstName().equals(firstName) && x.getLastName().equals(lastName))
+                .collect(Collectors.toList());
 
+        if (personList.isEmpty()) {
+            return null;
+        } else {
             personList.forEach(person -> {
                 MedicalRecord medicalRecord = dataService.getMedicalrecords().stream().filter(p -> p.getFirstName().equals(person.getFirstName()) && p.getLastName().equals(person.getLastName())).findFirst().get();
                 PersonInfoDTO personInfoDTO = new PersonInfoDTO();
@@ -239,8 +244,8 @@ public class PersonService {
                 personInfoDTOList.add(personInfoDTO);
             });
 
-
             return personInfoDTOList;
+        }
     }
 
     public List<String> emailService(String city){

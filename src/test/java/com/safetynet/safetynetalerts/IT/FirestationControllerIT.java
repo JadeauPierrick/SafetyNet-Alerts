@@ -24,4 +24,12 @@ public class FirestationControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].address", is("1509 Culver St")));
     }
+
+    @Test
+    public void testFindFirestationByAddress() throws Exception {
+        mockMvc.perform(get("/firestation/1509 Culver St"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("address", is("1509 Culver St")))
+                .andExpect(jsonPath("station", is(3)));
+    }
 }

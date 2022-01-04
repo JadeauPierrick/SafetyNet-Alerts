@@ -37,16 +37,30 @@ public class FirestationControllerTest {
     }
 
     @Test
-    public void testFindFirestationByAddress() throws Exception {
-        mockMvc.perform(get("/firestation/1509 Culver St"))
+    public void testFindByAddress() throws Exception {
+        mockMvc.perform(get("/firestation/29 15th St"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testFindByAddressWithUnknownAddress() throws Exception {
+        mockMvc.perform(get("/firestation/11 Oslo St"))
+                .andExpect(status().isBadRequest());
+    }
+
 
     @Test
     public void testCreateFirestation() throws Exception {
         mockMvc.perform(post("/firestation").contentType(APPLICATION_JSON)
                         .content("{ \"address\":\"10 Maine St\", \"station\":\"3\" }"))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testCreateFirestationWithError() throws Exception {
+        mockMvc.perform(post("/firestation").contentType(APPLICATION_JSON)
+                .content(""))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -58,8 +72,21 @@ public class FirestationControllerTest {
     }
 
     @Test
+    public void testUpdateFirestationWithError() throws Exception {
+        mockMvc.perform(put("/firestation/11 Oslo St").contentType(APPLICATION_JSON)
+                .content(""))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testDeleteFirestation() throws Exception {
         mockMvc.perform(delete("/firestation/1509 Culver St"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteFirestationWithUnknownAddress() throws Exception {
+        mockMvc.perform(delete("/firestation/11 Oslo St"))
+                .andExpect(status().isBadRequest());
     }
 }

@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.DTO;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -12,7 +13,8 @@ public class ChildrenInHouseDTOTest {
     public void testGetFirstName(){
         String firstName = "Scott";
 
-        childrenInHouseDTO = new ChildrenInHouseDTO("Scott","",8);
+        childrenInHouseDTO = new ChildrenInHouseDTO();
+        childrenInHouseDTO.setFirstName(firstName);
 
         assertThat(firstName).isEqualTo(childrenInHouseDTO.getFirstName());
     }
@@ -21,7 +23,8 @@ public class ChildrenInHouseDTOTest {
     public void testGetLastName(){
         String lastName = "Davies";
 
-        childrenInHouseDTO = new ChildrenInHouseDTO("","Davies",8);
+        childrenInHouseDTO = new ChildrenInHouseDTO();
+        childrenInHouseDTO.setLastName(lastName);
 
         assertThat(lastName).isEqualTo(childrenInHouseDTO.getLastName());
     }
@@ -30,21 +33,23 @@ public class ChildrenInHouseDTOTest {
     public void testGetAge(){
         int age = 8;
 
-        childrenInHouseDTO = new ChildrenInHouseDTO("","",8);
+        childrenInHouseDTO = new ChildrenInHouseDTO();
+        childrenInHouseDTO.setAge(age);
 
         assertThat(age).isEqualTo(childrenInHouseDTO.getAge());
     }
 
     @Test
     public void testChildrenInHouse(){
-        childrenInHouseDTO = new ChildrenInHouseDTO();
+        childrenInHouseDTO = new ChildrenInHouseDTO("Scott","Davies",8);
 
-        childrenInHouseDTO.setFirstName("Scott");
-        childrenInHouseDTO.setLastName("Davies");
-        childrenInHouseDTO.setAge(8);
+        assertThat("Scott").isEqualTo(childrenInHouseDTO.getFirstName());
+        assertThat("Davies").isEqualTo(childrenInHouseDTO.getLastName());
+        assertThat(8).isEqualTo(childrenInHouseDTO.getAge());
+    }
 
-        assertThat(childrenInHouseDTO.getFirstName()).isEqualTo("Scott");
-        assertThat(childrenInHouseDTO.getLastName()).isEqualTo("Davies");
-        assertThat(childrenInHouseDTO.getAge()).isEqualTo(8);
+    @Test
+    public void equalsContract(){
+        EqualsVerifier.simple().forClass(ChildrenInHouseDTO.class).verify();
     }
 }

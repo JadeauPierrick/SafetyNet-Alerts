@@ -41,10 +41,23 @@ public class MedicalRecordControllerTest {
     }
 
     @Test
+    public void testFindMedicalRecordWithUnknownFirstNameAndLastName() throws Exception {
+        mockMvc.perform(get("/medicalRecord/Jacob/Dale"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testCreateMedicalRecord() throws Exception {
         mockMvc.perform(post("/medicalRecord").contentType(APPLICATION_JSON)
                         .content("{ \"firstName\":\"Cyril\", \"lastName\":\"Cobb\", \"birthdate\":\"27/11/1985\", \"medications\":[\"mentalus:350mg\"], \"allergies\":[\"victis\"] }"))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testCreateMedicalRecordWithError() throws Exception {
+        mockMvc.perform(post("/medicalRecord").contentType(APPLICATION_JSON)
+                .content(""))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -56,8 +69,21 @@ public class MedicalRecordControllerTest {
     }
 
     @Test
+    public void testUpdateMedicalRecordWithError() throws Exception {
+        mockMvc.perform(put("/medicalRecord/Jacob/Dale").contentType(APPLICATION_JSON)
+                .content(""))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testDeleteMedicalRecord() throws Exception {
         mockMvc.perform(delete("/medicalRecord/Cyril/Cobb"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteMedicalRecordWithUnknownFirstNameAndLastName() throws Exception {
+        mockMvc.perform(delete("/medicalRecord/Jacob/Dale"))
+                .andExpect(status().isBadRequest());
     }
 }

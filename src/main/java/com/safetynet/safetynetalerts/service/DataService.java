@@ -35,14 +35,10 @@ public class DataService {
 
     private void loadData(){
         ObjectMapper objectMapper = new ObjectMapper();
-
-
         try {
             this.root = objectMapper.readValue(new File("src/main/resources/data.json"), Root.class);
-            System.out.println(root);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
