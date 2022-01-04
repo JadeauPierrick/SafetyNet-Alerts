@@ -1,7 +1,6 @@
 package com.safetynet.safetynetalerts.service;
 
 import com.safetynet.safetynetalerts.DTO.*;
-import com.safetynet.safetynetalerts.mapper.Mapper;
 import com.safetynet.safetynetalerts.model.Firestation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
@@ -101,9 +100,16 @@ public class PersonService {
         if(personList.isEmpty()) {
             return null;
         }else {
-            List<PersonByFirestationNumberDTO> personByFirestationNumberDTOList = personList.stream()
-                    .map(Mapper::toPersonByFirestationNumberDTO)
-                    .collect(Collectors.toList());
+            List<PersonByFirestationNumberDTO> personByFirestationNumberDTOList = new ArrayList<>();
+
+            personList.forEach(person -> {
+                PersonByFirestationNumberDTO personByFirestationNumberDTO = new PersonByFirestationNumberDTO();
+                personByFirestationNumberDTO.setFirstName(person.getFirstName());
+                personByFirestationNumberDTO.setLastName(person.getLastName());
+                personByFirestationNumberDTO.setAddress(person.getAddress());
+                personByFirestationNumberDTO.setPhone(person.getPhone());
+                personByFirestationNumberDTOList.add(personByFirestationNumberDTO);
+            });
 
             List<MedicalRecord> medicalRecordList = dataService.getMedicalrecords().stream()
                     .filter(x -> personByFirestationNumberDTOList.stream().map(PersonByFirestationNumberDTO::getFirstName).anyMatch(firstName -> firstName.equals(x.getFirstName())))
