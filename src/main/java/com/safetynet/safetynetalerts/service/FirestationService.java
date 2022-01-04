@@ -56,11 +56,9 @@ public class FirestationService {
         if (fs != null){
             firestationList.remove(fs);
             return true;
-        }else {
-            return false;
         }
+        return false;
     }
-
 }
 
 

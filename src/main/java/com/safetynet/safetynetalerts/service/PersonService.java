@@ -80,9 +80,8 @@ public class PersonService {
         if (person != null){
             personList.remove(person);
             return true;
-        }else {
-            return false;
         }
+        return false;
     }
 
     public List<Person> findAllPersonsByItsFirestationNumber(int station){

@@ -29,7 +29,7 @@ public class DTOController {
             log.error("The station number is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
-            log.info("Your request has been made");
+            log.info("Get a list of persons covered by their fire station number");
             return new ResponseEntity<>(person, HttpStatus.OK);
         }
     }
@@ -41,7 +41,7 @@ public class DTOController {
             log.error("The address is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
-            log.info("Your request has been made");
+            log.info("Get a list of children and a list of adults living at the address");
             return new ResponseEntity<>(childAlertDTO, HttpStatus.OK);
         }
     }
@@ -53,7 +53,7 @@ public class DTOController {
             log.error("The address is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
-            log.info("Your request has been made");
+            log.info("Get a list of persons living at the address and the corresponding fire station");
             return new ResponseEntity<>(fireDTO, HttpStatus.OK);
         }
     }
@@ -65,7 +65,7 @@ public class DTOController {
             log.error("Your list must contain valid station numbers");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
-            log.info("Your request has been made");
+            log.info("Get a list of all the homes served by the fire station");
             return new ResponseEntity<>(floodDTOList, HttpStatus.OK);
         }
     }
@@ -77,7 +77,7 @@ public class DTOController {
             log.error("The first or the last name is not correct");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }else {
-            log.info("Your request has been made");
+            log.info("Get the information of the person selected");
             return new ResponseEntity<>(personInfoDTOList, HttpStatus.OK);
         }
     }

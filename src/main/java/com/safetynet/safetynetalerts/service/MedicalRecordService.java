@@ -73,9 +73,8 @@ public class MedicalRecordService {
         if (md != null) {
             medicalRecordsList.remove(md);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public ChildAlertDTO childAlertService(String address) {
